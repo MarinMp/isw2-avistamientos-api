@@ -11,10 +11,10 @@ public class Avistamiento {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "especie", nullable = false, length = 30)
+    @Column(name = "especie", nullable = false, length = 100)
     private String especie;
 
-    @Column(name = "lugar", nullable = false, length = 50)
+    @Column(name = "lugar", nullable = false, length = 100)
     private String lugar;
 
     @Column(name = "fecha", nullable = false, length = 10)

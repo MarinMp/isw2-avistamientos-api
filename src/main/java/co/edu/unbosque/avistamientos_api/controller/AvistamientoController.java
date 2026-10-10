@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/avistamientos")
@@ -47,6 +45,7 @@ public class AvistamientoController {
         if (error != null) {
             return datosInvalidos(error);
         }
+        normalizar(datos);
         datos.setId(null);
         Avistamiento creado = repositorio.save(datos);
         return ResponseEntity.created(URI.create("/avistamientos/" + creado.getId()))
@@ -64,6 +63,7 @@ public class AvistamientoController {
         if (error != null) {
             return datosInvalidos(error);
         }
+        normalizar(datos);
         Avistamiento existente = encontrado.get();
         existente.setEspecie(datos.getEspecie());
         existente.setLugar(datos.getLugar());
@@ -80,6 +80,13 @@ public class AvistamientoController {
         }
         repositorio.deleteById(id);
         return ResponseEntity.ok(Map.of("mensaje", "Avistamiento con id " + id + " eliminado correctamente"));
+    }
+
+    // Bonus - Resumen avistamientos por especie
+    @GetMapping("/resumen")
+    public Map<String, Long> resumen() {
+        return repositorio.findAll().stream()
+                .collect(Collectors.groupingBy(Avistamiento::getEspecie, TreeMap::new, Collectors.counting()));
     }
 
     // Respuesta cuando el avistamiento no existe
@@ -114,8 +121,16 @@ public class AvistamientoController {
         return null;
     }
 
-    // Indica si un texto es null, vacío o solo espacios
+    // Indica si un texto es null
     private boolean vacio(String texto) {
         return texto == null || texto.isBlank();
+    }
+
+    // Quita espacios sobrantes y pasa la especie a minúsculas
+    private void normalizar(Avistamiento a) {
+        a.setEspecie(a.getEspecie().trim().toLowerCase());
+        a.setLugar(a.getLugar().trim());
+        a.setFecha(a.getFecha().trim());
+        a.setObservador(a.getObservador().trim());
     }
 }

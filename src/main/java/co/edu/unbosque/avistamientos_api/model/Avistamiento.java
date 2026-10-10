@@ -8,13 +8,23 @@ public class Avistamiento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "especie", nullable = false, length = 30)
     private String especie;
+
+    @Column(name = "lugar", nullable = false, length = 50)
     private String lugar;
+
+    @Column(name = "fecha", nullable = false, length = 10)
     private String fecha;
+
+    @Column(name = "observador", nullable = false, length = 30)
     private String observador;
 
-    public Avistamiento() { }
+    public Avistamiento() {
+    }
 
     public Long getId() {
         return id;

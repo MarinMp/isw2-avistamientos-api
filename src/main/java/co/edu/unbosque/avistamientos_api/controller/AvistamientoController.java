@@ -2,6 +2,7 @@ package co.edu.unbosque.avistamientos_api.controller;
 
 import co.edu.unbosque.avistamientos_api.model.Avistamiento;
 import co.edu.unbosque.avistamientos_api.repository.AvistamientoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
@@ -10,6 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/avistamientos")
@@ -24,6 +26,20 @@ public class AvistamientoController {
     @GetMapping
     public List<Avistamiento> listar() {
         return repositorio.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtener(@PathVariable("id") Long id) {
+        Optional<Avistamiento> encontrado = repositorio.findById(id);
+        if (encontrado.isEmpty()) {
+            return noEncontrado(id);
+        }
+        return ResponseEntity.ok(encontrado.get());
+    }
+
+    private ResponseEntity<Map<String, String>> noEncontrado(Long id) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "No existe un avistamiento con id " + id));
     }
 
     @PostMapping
@@ -52,6 +68,9 @@ public class AvistamientoController {
         } catch (DateTimeParseException e) {
             return "La fecha debe tener el formato AAAA-MM-DD";
         }
+        if (a.getEspecie().length() > 30) return "La especie no puede tener más de 30 caracteres";
+        if (a.getLugar().length() > 50) return "El lugar no puede tener más de 50 caracteres";
+        if (a.getObservador().length() > 30) return "El observador no puede tener más de 30 caracteres";
         return null;
     }
 

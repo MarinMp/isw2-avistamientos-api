@@ -311,5 +311,5 @@ Donde más me apoyé fue en las pruebas de integración (`AvistamientoApiTest.ja
 
 - **Universidad: Universidad El Bosque**
 - **Asignatura: Ingeniería de Software 2**
-- **Autora: María Paula Marín Soler.**
-- **Docente: Jonathan Briceño.**
+- **Autor: María Paula Marín Soler**
+- **Docente: Jonathan Briceño**

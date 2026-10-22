@@ -11,7 +11,7 @@ public class Avistamiento {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "especie", nullable = false, length = 100)
+    @Column(name = "especie", nullable = false, length = 50)
     private String especie;
 
     @Column(name = "lugar", nullable = false, length = 100)

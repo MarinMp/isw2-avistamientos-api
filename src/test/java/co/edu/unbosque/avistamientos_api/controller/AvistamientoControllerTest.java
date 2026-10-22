@@ -20,7 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// Pruebas unitarias del controlador
+// Pruebas unitarias del controlador: no levantan la API ni usan la base de datos.
 class AvistamientoControllerTest {
 
     private AvistamientoRepository repositorio;
@@ -37,23 +37,29 @@ class AvistamientoControllerTest {
 
     @Test
     void registrarAvistamientoValidoLoGuardaUnaVezYResponde201() {
+        // Arrange
         Avistamiento guardado = avistamientoValido();
         guardado.setId(1L);
         when(repositorio.save(any(Avistamiento.class))).thenReturn(guardado);
 
+        // Act
         ResponseEntity<?> respuesta = controlador.registrar(avistamientoValido());
 
+        // Assert
         assertEquals(201, respuesta.getStatusCode().value());
         verify(repositorio, times(1)).save(any(Avistamiento.class));
     }
 
     @Test
     void registrarAvistamientoInvalidoResponde400YNoLoGuarda() {
+        // Arrange
         Avistamiento invalido = avistamientoValido();
         invalido.setEspecie("ab");
 
+        // Act
         ResponseEntity<?> respuesta = controlador.registrar(invalido);
 
+        // Assert
         assertEquals(400, respuesta.getStatusCode().value());
         assertEquals(Map.of("error", "La especie debe tener entre 3 y 50 caracteres"), respuesta.getBody());
         verify(repositorio, never()).save(any(Avistamiento.class));
@@ -61,10 +67,13 @@ class AvistamientoControllerTest {
 
     @Test
     void obtenerAvistamientoQueNoExisteResponde404() {
+        // Arrange
         when(repositorio.findById(99L)).thenReturn(Optional.empty());
 
+        // Act
         ResponseEntity<?> respuesta = controlador.obtener(99L);
 
+        // Assert
         assertEquals(404, respuesta.getStatusCode().value());
         assertEquals(Map.of("error", "No existe un avistamiento con id 99"), respuesta.getBody());
     }

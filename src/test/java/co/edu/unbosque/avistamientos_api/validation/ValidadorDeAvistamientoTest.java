@@ -19,6 +19,7 @@ class ValidadorDeAvistamientoTest {
 
     @BeforeEach
     void prepararValidador() {
+        // Se le entrega el stub del reloj en lugar del reloj real
         validador = new ValidadorDeAvistamiento(new RelojFijo(HOY));
     }
 
@@ -26,41 +27,53 @@ class ValidadorDeAvistamientoTest {
 
     @Test
     void especieDeTresCaracteresEsValida() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setEspecie("abc");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertNull(error);
     }
 
     @Test
     void especieDeDosCaracteresEsRechazada() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setEspecie("ab");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertEquals("La especie debe tener entre 3 y 50 caracteres", error);
     }
 
     @Test
     void especieDeCincuentaCaracteresEsValida() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setEspecie("a".repeat(50));
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertNull(error);
     }
 
     @Test
     void especieDeCincuentaYUnCaracteresEsRechazada() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setEspecie("a".repeat(51));
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertEquals("La especie debe tener entre 3 y 50 caracteres", error);
     }
 
@@ -68,21 +81,27 @@ class ValidadorDeAvistamientoTest {
 
     @Test
     void fechaDeHoyEsValida() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setFecha("2026-10-27");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertNull(error);
     }
 
     @Test
     void fechaDeMananaEsRechazada() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setFecha("2026-10-28");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertEquals("La fecha no puede ser posterior a hoy", error);
     }
 
@@ -131,31 +150,40 @@ class ValidadorDeAvistamientoTest {
 
     @Test
     void fechaPasadaEsValida() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setFecha("2026-09-15");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertNull(error);
     }
 
     @Test
     void fechaConFormatoDiaMesAnioEsRechazada() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setFecha("27/10/2026");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertEquals("La fecha debe tener el formato AAAA-MM-DD", error);
     }
 
     @Test
     void fechaInexistenteEsRechazada() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setFecha("2026-02-30");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertEquals("La fecha debe tener el formato AAAA-MM-DD", error);
     }
 
@@ -163,25 +191,29 @@ class ValidadorDeAvistamientoTest {
 
     @Test
     void lugarVacioSeConsideraFaltante() {
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setLugar("");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertEquals("Faltan datos obligatorios: lugar", error);
     }
 
     @Test
     void observadorVacioSeConsideraFaltante() {
-
+        // Arrange
         Avistamiento avistamiento = avistamientoValido();
         avistamiento.setObservador("");
 
+        // Act
         String error = validador.validar(avistamiento);
 
+        // Assert
         assertEquals("Faltan datos obligatorios: observador", error);
     }
-
 
     // ===================== AUXILIAR =====================
 

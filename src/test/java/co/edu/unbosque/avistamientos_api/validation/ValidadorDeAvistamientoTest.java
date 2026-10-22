@@ -86,6 +86,103 @@ class ValidadorDeAvistamientoTest {
         assertEquals("La fecha no puede ser posterior a hoy", error);
     }
 
+    // ===================== ESPECIE: otros casos =====================
+
+    @Test
+    void especieRepresentativaEsValida() {
+        // Arrange
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setEspecie("guacamaya");
+
+        // Act
+        String error = validador.validar(avistamiento);
+
+        // Assert
+        assertNull(error);
+    }
+
+    @Test
+    void especieConSoloEspaciosSeConsideraFaltante() {
+        // Arrange
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setEspecie("   ");
+
+        // Act
+        String error = validador.validar(avistamiento);
+
+        // Assert
+        assertEquals("Faltan datos obligatorios: especie", error);
+    }
+
+    @Test
+    void especieDeDosCaracteresRodeadaDeEspaciosEsRechazada() {
+        // Arrange
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setEspecie("  ab  ");
+
+        // Act
+        String error = validador.validar(avistamiento);
+
+        // Assert
+        assertEquals("La especie debe tener entre 3 y 50 caracteres", error);
+    }
+
+    // ===================== FECHA: otros casos =====================
+
+    @Test
+    void fechaPasadaEsValida() {
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setFecha("2026-09-15");
+
+        String error = validador.validar(avistamiento);
+
+        assertNull(error);
+    }
+
+    @Test
+    void fechaConFormatoDiaMesAnioEsRechazada() {
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setFecha("27/10/2026");
+
+        String error = validador.validar(avistamiento);
+
+        assertEquals("La fecha debe tener el formato AAAA-MM-DD", error);
+    }
+
+    @Test
+    void fechaInexistenteEsRechazada() {
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setFecha("2026-02-30");
+
+        String error = validador.validar(avistamiento);
+
+        assertEquals("La fecha debe tener el formato AAAA-MM-DD", error);
+    }
+
+    // ===================== LUGAR Y OBSERVADOR =====================
+
+    @Test
+    void lugarVacioSeConsideraFaltante() {
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setLugar("");
+
+        String error = validador.validar(avistamiento);
+
+        assertEquals("Faltan datos obligatorios: lugar", error);
+    }
+
+    @Test
+    void observadorVacioSeConsideraFaltante() {
+
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setObservador("");
+
+        String error = validador.validar(avistamiento);
+
+        assertEquals("Faltan datos obligatorios: observador", error);
+    }
+
+
     // ===================== AUXILIAR =====================
 
     // Crea un avistamiento con todos los campos válidos.

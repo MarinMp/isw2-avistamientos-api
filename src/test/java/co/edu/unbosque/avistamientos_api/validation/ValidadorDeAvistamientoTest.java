@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-// Pruebas unitarias del validador: no levantan la API ni usan la base de datos.
+// Pruebas unitarias del validador
 class ValidadorDeAvistamientoTest {
 
     // "Hoy" fijo para todas las pruebas: 27 de octubre de 2026
@@ -185,6 +185,19 @@ class ValidadorDeAvistamientoTest {
 
         // Assert
         assertEquals("La fecha debe tener el formato AAAA-MM-DD", error);
+    }
+
+    @Test
+    void fechaVaciaSeConsideraFaltante() {
+        // Arrange
+        Avistamiento avistamiento = avistamientoValido();
+        avistamiento.setFecha("");
+
+        // Act
+        String error = validador.validar(avistamiento);
+
+        // Assert
+        assertEquals("Faltan datos obligatorios: fecha", error);
     }
 
     // ===================== LUGAR Y OBSERVADOR =====================

@@ -20,7 +20,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-// Pruebas unitarias del controlador: no levantan la API ni usan la base de datos.
+// Pruebas unitarias del controlador
 class AvistamientoControllerTest {
 
     private AvistamientoRepository repositorio;

@@ -22,6 +22,8 @@ La estructura inicial del proyecto (`pom.xml`, Maven Wrapper y clase principal) 
 - **Spring Boot:** Spring Web y Spring Data JPA.
 - **H2 Database:** Embebida. La carpeta ./data se crea al arrancar la API.
 - **Maven Wrapper:** `mvnw` y `mvnw.cmd`. No es necesario instalar Maven.
+- **JUnit 5 y Mockito:** Pruebas unitarias y dobles de prueba.
+- **JaCoCo:** Medición de la cobertura de las pruebas.
 
 ## Requisitos para ejecutar el proyecto
 
@@ -253,44 +255,73 @@ Respuesta:
 
 ## Pruebas automáticas (bonus)
 
-El proyecto incluye pruebas automáticas que revisan que la API funcione bien, sin necesidad de usar Postman ni curl. Estas pruebas se encuentran en el archivo:
+El proyecto incluye pruebas automáticas que revisan que la API funcione bien, sin necesidad de usar Postman ni curl. Hay pruebas en dos niveles:
+
+| Nivel | Clase | Pruebas | Qué revisa |
+|---|---|---|---|
+| Unitario | `validation/ValidadorDeAvistamientoTest` | 15 | La regla de negocio del validador, con valores límite (especie de 2, 3, 50 y 51 caracteres; y fecha de hoy y de mañana). Usa un reloj con fecha fija (`RelojFijo`, un stub). |
+| Unitario | `controller/AvistamientoControllerTest` | 3 | El controlador sin levantar la API, con un mock del repositorio (Mockito). |
+| Integración | `AvistamientoApiTest` | 15 | La API completa por HTTP: los 5 endpoints y el resumen, con casos de éxito y de error (200, 201, 400 y 404), el cuerpo de la respuesta y el efecto en la base de datos. |
+
+Las pruebas de integración encienden la API de forma temporal y usan una base de datos aparte, en memoria, así que **no afectan los avistamientos guardados en `data/`**.
+ 
+Antes de ejecutar las pruebas se debe **apagar la API** si está encendida. Los comandos se ejecutan dentro de la carpeta del proyecto.
 
 `src/test/java/co/edu/unbosque/avistamientos_api/AvistamientoApiTest.java`
 
-Al ejecutarlas, las pruebas:
-
-1. Encienden la API de forma temporal.
-2. Usan una base de datos aparte, que se borra al terminar, así que no afectan los avistamientos guardados en `data/`.
-3. Hacen peticiones a cada endpoint, igual que se haría con Postman.
-4. Comprueban que cada respuesta tenga el código correcto (200, 201, 400 o 404). También revisan que la especie se normalice y que el resumen cuente bien.
-
-Para ejecutarlas, primero se debe apagar la API si está encendida. Luego, dentro de la carpeta del proyecto, se ejecuta el comando según la terminal:
-
+### Ejecutar las pruebas
+ 
 | Sistema | Comando |
 |---|---|
 | Linux / macOS / Git Bash (recomendado) | `./mvnw test` |
 | Windows (CMD o PowerShell) | `.\mvnw.cmd test` |
 
-Si todas las pruebas pasan, al final aparece el mensaje `BUILD SUCCESS`. Si alguna falla, aparece `BUILD FAILURE` junto con el nombre de la prueba que falló.
+Si todas las pruebas pasan, al final aparece `Tests run: 34, Failures: 0, Errors: 0` y el mensaje `BUILD SUCCESS`. Si alguna falla, aparece `BUILD FAILURE` junto con el nombre de la prueba que falló.
+
+### Generar el reporte de cobertura
+ 
+La cobertura se mide con **JaCoCo**. Este comando ejecuta todas las pruebas y luego genera el reporte:
+ 
+| Sistema | Comando |
+|---|---|
+| Linux / macOS / Git Bash (recomendado) | `./mvnw verify` |
+| Windows (CMD o PowerShell) | `.\mvnw.cmd verify` |
+
+Al terminar, el reporte queda en **`target/site/jacoco/index.html`**. Para verlo, se abre ese archivo con el navegador (doble clic desde el explorador de archivos). En el reporte, verde significa código ejecutado por las pruebas, rojo código que nunca se ejecutó y amarillo una condición en la que solo se probó uno de sus caminos.
+ 
+### Documento de justificación
+ 
+Las decisiones sobre qué probar, en qué nivel, con qué dobles y la lectura de la cobertura están explicadas en **`docs/justificacion-pruebas.pdf`**.
 
 ---
 
 ## Estructura del proyecto
 
 ```
+docs/
+└── justificacion-pruebas.pdf                      # Documento de justificación de las pruebas
 src/
 ├── main/
 │   ├── java/co/edu/unbosque/avistamientos_api/
 │   │   ├── controller/AvistamientoController.java # Endpoints REST
-│   │   ├── model/Avistamiento.java                # Entidad JPA, donde está la tabla "avistamientos"
+│   │   ├── model/Avistamiento.java                # Entidad JPA (tabla "avistamientos")
 │   │   ├── repository/AvistamientoRepository.java # Acceso a la base de datos
+│   │   ├── validation/
+│   │   │   ├── ValidadorDeAvistamiento.java       # Regla de negocio (validación)
+│   │   │   ├── Reloj.java                         # Interfaz para obtener la fecha de hoy
+│   │   │   └── RelojDelSistema.java               # Reloj real (LocalDate.now())
 │   │   └── AvistamientosApiApplication.java       # Clase principal que arranca la API
-│   └── resources/application.properties           
+│   └── resources/application.properties           # Configuración de H2 y del servidor
 └── test/
     ├── java/co/edu/unbosque/avistamientos_api/
-    │   └── AvistamientoApiTest.java               # Clase con las pruebas de integración
+    │   ├── validation/
+    │   │   ├── ValidadorDeAvistamientoTest.java   # Pruebas unitarias del validador
+    │   │   └── RelojFijo.java                     # Doble de prueba (stub) con fecha fija
+    │   ├── controller/
+    │   │   └── AvistamientoControllerTest.java    # Pruebas unitarias con mock del repositorio
+    │   └── AvistamientoApiTest.java               # Pruebas de integración
     └── resources/application.properties           # H2 en memoria solo para las pruebas
-```	
+```
 
 ---
 
@@ -305,6 +336,13 @@ Donde más me apoyé fue en las pruebas de integración (`AvistamientoApiTest.ja
 - Me ayudó a revisar el código que fui escribiendo y me sugirió mejoras.
 - Por último, me apoyó en la redacción de este README para poder entregar una buena guía.
 
+En el **taller de pruebas unitarias y de integración** también usé Claude (Claude Opus 5.5) como guía para:
+ 
+- Extraer la validación a la clase `ValidadorDeAvistamiento` y crear la interfaz `Reloj`.
+- Generar la clase de pruebas del controlador con Mockito.
+- Reescribir las pruebas de integración.
+- Configurar JaCoCo e interpretar el reporte de cobertura.
+- Por último, me apoyó en la redacción de lo que me faltaba para una buena guía en el README..
 ---
 
 ## Información Académica 

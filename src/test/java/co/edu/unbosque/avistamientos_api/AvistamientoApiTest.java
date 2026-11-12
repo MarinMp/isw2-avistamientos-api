@@ -1,7 +1,6 @@
 package co.edu.unbosque.avistamientos_api;
 
-import co.edu.unbosque.avistamientos_api.model.Avistamiento;
-import co.edu.unbosque.avistamientos_api.repository.AvistamientoRepository;
+import co.edu.unbosque.avistamientos_api.adaptador.salida.persistencia.AvistamientoJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ class AvistamientoApiTest {
     private int puerto;
 
     @Autowired
-    private AvistamientoRepository repositorio;
+    private AvistamientoJpaRepository repositorio;
 
     private final HttpClient cliente = HttpClient.newHttpClient();
 

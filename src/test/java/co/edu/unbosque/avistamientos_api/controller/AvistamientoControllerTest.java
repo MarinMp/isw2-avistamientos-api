@@ -1,7 +1,7 @@
 package co.edu.unbosque.avistamientos_api.controller;
 
-import co.edu.unbosque.avistamientos_api.model.Avistamiento;
-import co.edu.unbosque.avistamientos_api.repository.AvistamientoRepository;
+import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.RepositorioAvistamientos;
+import co.edu.unbosque.avistamientos_api.dominio.Avistamiento;
 import co.edu.unbosque.avistamientos_api.validation.RelojFijo;
 import co.edu.unbosque.avistamientos_api.validation.ValidadorDeAvistamiento;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,13 +23,13 @@ import static org.mockito.Mockito.when;
 // Pruebas unitarias del controlador
 class AvistamientoControllerTest {
 
-    private AvistamientoRepository repositorio;
+    private RepositorioAvistamientos repositorio;
     private AvistamientoController controlador;
 
     @BeforeEach
     void prepararControlador() {
         // Doble del repositorio: un mock creado por Mockito
-        repositorio = mock(AvistamientoRepository.class);
+        repositorio = mock(RepositorioAvistamientos.class);
         // Validador real, con el stub del reloj (hoy = 2026-10-27)
         ValidadorDeAvistamiento validador = new ValidadorDeAvistamiento(new RelojFijo(LocalDate.of(2026, 10, 27)));
         controlador = new AvistamientoController(repositorio, validador);
@@ -40,14 +40,14 @@ class AvistamientoControllerTest {
         // Arrange
         Avistamiento guardado = avistamientoValido();
         guardado.setId(1L);
-        when(repositorio.save(any(Avistamiento.class))).thenReturn(guardado);
+        when(repositorio.guardar(any(Avistamiento.class))).thenReturn(guardado);
 
         // Act
         ResponseEntity<?> respuesta = controlador.registrar(avistamientoValido());
 
         // Assert
         assertEquals(201, respuesta.getStatusCode().value());
-        verify(repositorio, times(1)).save(any(Avistamiento.class));
+        verify(repositorio, times(1)).guardar(any(Avistamiento.class));
     }
 
     @Test
@@ -62,13 +62,13 @@ class AvistamientoControllerTest {
         // Assert
         assertEquals(400, respuesta.getStatusCode().value());
         assertEquals(Map.of("error", "La especie debe tener entre 3 y 50 caracteres"), respuesta.getBody());
-        verify(repositorio, never()).save(any(Avistamiento.class));
+        verify(repositorio, never()).guardar(any(Avistamiento.class));
     }
 
     @Test
     void obtenerAvistamientoQueNoExisteResponde404() {
         // Arrange
-        when(repositorio.findById(99L)).thenReturn(Optional.empty());
+        when(repositorio.buscarPorId(99L)).thenReturn(Optional.empty());
 
         // Act
         ResponseEntity<?> respuesta = controlador.obtener(99L);

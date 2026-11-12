@@ -1,7 +1,7 @@
 package co.edu.unbosque.avistamientos_api.controller;
 
-import co.edu.unbosque.avistamientos_api.model.Avistamiento;
-import co.edu.unbosque.avistamientos_api.repository.AvistamientoRepository;
+import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.RepositorioAvistamientos;
+import co.edu.unbosque.avistamientos_api.dominio.Avistamiento;
 import co.edu.unbosque.avistamientos_api.validation.ValidadorDeAvistamiento;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/avistamientos")
 public class AvistamientoController {
 
-    private final AvistamientoRepository repositorio;
+    private final RepositorioAvistamientos repositorio;
     private final ValidadorDeAvistamiento validador;
 
-    public AvistamientoController(AvistamientoRepository repositorio, ValidadorDeAvistamiento validador) {
+    public AvistamientoController(RepositorioAvistamientos repositorio, ValidadorDeAvistamiento validador) {
         this.repositorio = repositorio;
         this.validador = validador;
     }
@@ -26,13 +26,13 @@ public class AvistamientoController {
     // Listar todos los avistamientos
     @GetMapping
     public List<Avistamiento> listar() {
-        return repositorio.findAll();
+        return repositorio.listarTodos();
     }
 
     // Ver un avistamiento
     @GetMapping("/{id}")
     public ResponseEntity<?> obtener(@PathVariable("id") Long id) {
-        Optional<Avistamiento> encontrado = repositorio.findById(id);
+        Optional<Avistamiento> encontrado = repositorio.buscarPorId(id);
         if (encontrado.isEmpty()) {
             return noEncontrado(id);
         }
@@ -48,7 +48,7 @@ public class AvistamientoController {
         }
         normalizar(datos);
         datos.setId(null);
-        Avistamiento creado = repositorio.save(datos);
+        Avistamiento creado = repositorio.guardar(datos);
         return ResponseEntity.created(URI.create("/avistamientos/" + creado.getId()))
                 .body(creado);
     }
@@ -56,7 +56,7 @@ public class AvistamientoController {
     // Actualizar un avistamiento
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable("id") Long id, @RequestBody Avistamiento datos) {
-        Optional<Avistamiento> encontrado = repositorio.findById(id);
+        Optional<Avistamiento> encontrado = repositorio.buscarPorId(id);
         if (encontrado.isEmpty()) {
             return noEncontrado(id);
         }
@@ -70,23 +70,23 @@ public class AvistamientoController {
         existente.setLugar(datos.getLugar());
         existente.setFecha(datos.getFecha());
         existente.setObservador(datos.getObservador());
-        return ResponseEntity.ok(repositorio.save(existente));
+        return ResponseEntity.ok(repositorio.guardar(existente));
     }
 
     // Eliminar un avistamiento
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable("id") Long id) {
-        if (!repositorio.existsById(id)) {
+        if (!repositorio.existe(id)) {
             return noEncontrado(id);
         }
-        repositorio.deleteById(id);
+        repositorio.eliminar(id);
         return ResponseEntity.ok(Map.of("mensaje", "Avistamiento con id " + id + " eliminado correctamente"));
     }
 
     // Bonus - Resumen avistamientos por especie
     @GetMapping("/resumen")
     public Map<String, Long> resumen() {
-        return repositorio.findAll().stream()
+        return repositorio.listarTodos().stream()
                 .collect(Collectors.groupingBy(Avistamiento::getEspecie, TreeMap::new, Collectors.counting()));
     }
 

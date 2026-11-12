@@ -1,10 +1,11 @@
-package co.edu.unbosque.avistamientos_api.model;
+package co.edu.unbosque.avistamientos_api.adaptador.salida.persistencia;
 
 import jakarta.persistence.*;
 
+// Adaptador de salida: así se guarda un avistamiento en la tabla de la base de datos (JPA)
 @Entity
 @Table(name = "avistamientos")
-public class Avistamiento {
+public class AvistamientoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +24,7 @@ public class Avistamiento {
     @Column(name = "observador", nullable = false, length = 30)
     private String observador;
 
-    public Avistamiento() {
+    public AvistamientoEntity() {
     }
 
     public Long getId() {

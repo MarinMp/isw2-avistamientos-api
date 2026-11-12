@@ -1,6 +1,6 @@
 package co.edu.unbosque.avistamientos_api.validation;
 
-import co.edu.unbosque.avistamientos_api.model.Avistamiento;
+import co.edu.unbosque.avistamientos_api.dominio.Avistamiento;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

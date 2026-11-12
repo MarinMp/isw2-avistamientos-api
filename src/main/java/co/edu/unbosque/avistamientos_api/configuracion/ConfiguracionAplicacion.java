@@ -1,9 +1,10 @@
 package co.edu.unbosque.avistamientos_api.configuracion;
 
 import co.edu.unbosque.avistamientos_api.aplicacion.puerto.entrada.GestionarAvistamientos;
+import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.Reloj;
 import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.RepositorioAvistamientos;
 import co.edu.unbosque.avistamientos_api.aplicacion.servicio.ServicioAvistamientos;
-import co.edu.unbosque.avistamientos_api.validation.ValidadorDeAvistamiento;
+import co.edu.unbosque.avistamientos_api.aplicacion.servicio.ValidadorDeAvistamiento;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,6 +12,11 @@ import org.springframework.context.annotation.Configuration;
 // Así la aplicación no necesita anotaciones de Spring.
 @Configuration
 public class ConfiguracionAplicacion {
+
+    @Bean
+    public ValidadorDeAvistamiento validadorDeAvistamiento(Reloj reloj) {
+        return new ValidadorDeAvistamiento(reloj);
+    }
 
     @Bean
     public GestionarAvistamientos gestionarAvistamientos(RepositorioAvistamientos repositorio,

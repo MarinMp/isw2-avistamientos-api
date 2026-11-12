@@ -1,4 +1,4 @@
-package co.edu.unbosque.avistamientos_api.validation;
+package co.edu.unbosque.avistamientos_api.aplicacion.servicio;
 
 import co.edu.unbosque.avistamientos_api.dominio.Avistamiento;
 import org.junit.jupiter.api.BeforeEach;

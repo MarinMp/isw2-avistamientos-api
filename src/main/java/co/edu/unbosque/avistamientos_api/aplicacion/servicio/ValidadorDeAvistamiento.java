@@ -1,15 +1,14 @@
-package co.edu.unbosque.avistamientos_api.validation;
+package co.edu.unbosque.avistamientos_api.aplicacion.servicio;
 
 import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.Reloj;
 import co.edu.unbosque.avistamientos_api.dominio.Avistamiento;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+// Reglas de validación de un avistamiento. Es código de la aplicación: no depende de Spring.
 public class ValidadorDeAvistamiento {
 
     private final Reloj reloj;

@@ -5,7 +5,6 @@ import co.edu.unbosque.avistamientos_api.aplicacion.puerto.entrada.AvistamientoN
 import co.edu.unbosque.avistamientos_api.aplicacion.puerto.entrada.GestionarAvistamientos;
 import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.RepositorioAvistamientos;
 import co.edu.unbosque.avistamientos_api.dominio.Avistamiento;
-import co.edu.unbosque.avistamientos_api.validation.ValidadorDeAvistamiento;
 
 import java.util.List;
 import java.util.Map;

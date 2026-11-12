@@ -1,6 +1,6 @@
 # Taller: Clean Architecture
 
-**Ingeniería de Software 2** · María Paula Marín Soler
+**Ingeniería de Software 2** - María Paula Marín Soler
 
 ---
 

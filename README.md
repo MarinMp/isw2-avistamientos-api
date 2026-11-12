@@ -343,6 +343,86 @@ En el **taller de pruebas unitarias y de integración** también usé Claude (Cl
 - Reescribir las pruebas de integración.
 - Configurar JaCoCo e interpretar el reporte de cobertura.
 - Por último, me apoyó en la redacción de lo que me faltaba para una buena guía en el README..
+
+---
+
+## Evolución del proyecto
+
+### Taller de Clean Architecture
+
+En este taller la API se reorganizó con **arquitectura hexagonal (puertos y adaptadores)**. Los endpoints, las reglas de validación y las respuestas siguen siendo los mismos, y las 34 pruebas pasan antes y después del cambio. Lo que cambió es cómo está organizado el código por dentro.
+
+Las reglas de negocio quedan en el centro (`dominio` y `aplicacion`), sin depender de Spring ni de JPA, y las tecnologías quedan en el borde como adaptadores reemplazables. Todas las dependencias apuntan hacia el centro.
+
+![Diagrama de dependencias](docs/img/diagrama-dependencias.png)
+
+| Capa | Qué contiene |
+|---|---|
+| `dominio` | El objeto de negocio `Avistamiento` y su regla de normalización. |
+| `aplicacion/puerto/entrada` | `GestionarAvistamientos`, los casos de uso que ofrece la API, y sus excepciones. |
+| `aplicacion/puerto/salida` | Lo que la aplicación necesita del exterior: `RepositorioAvistamientos` y `Reloj`. |
+| `aplicacion/servicio` | `ServicioAvistamientos` (implementa los casos de uso) y `ValidadorDeAvistamiento`. |
+| `adaptador/entrada/web` | `AvistamientoController`: traduce HTTP a casos de uso y respuestas. |
+| `adaptador/salida` | `RepositorioAvistamientosJpa` (H2 con JPA) y `RelojDelSistema`. |
+| `configuracion` | `ConfiguracionAplicacion`: conecta cada puerto con su implementación. |
+
+#### Nueva estructura del proyecto
+
+Esta estructura reemplaza a la de la sección **Estructura del proyecto**:
+
+```
+docs/
+├── justificacion-pruebas.pdf                      # Justificación de las pruebas (taller de pruebas)
+├── Taller5_Clean_Architecture.md                  # Documento del taller de Clean Architecture
+└── img/                                           # Diagrama y evidencias del taller
+src/
+├── main/
+│   ├── java/co/edu/unbosque/avistamientos_api/
+│   │   ├── dominio/
+│   │   │   └── Avistamiento.java                  # Objeto de negocio, sin Spring ni JPA
+│   │   ├── aplicacion/
+│   │   │   ├── puerto/entrada/                    # GestionarAvistamientos + excepciones
+│   │   │   ├── puerto/salida/                     # RepositorioAvistamientos, Reloj
+│   │   │   └── servicio/                          # ServicioAvistamientos, ValidadorDeAvistamiento
+│   │   ├── adaptador/
+│   │   │   ├── entrada/web/                       # AvistamientoController (endpoints REST)
+│   │   │   └── salida/
+│   │   │       ├── persistencia/                  # AvistamientoEntity, AvistamientoJpaRepository,
+│   │   │       │                                  # RepositorioAvistamientosJpa
+│   │   │       └── reloj/                         # RelojDelSistema (LocalDate.now())
+│   │   ├── configuracion/                         # ConfiguracionAplicacion (conecta todo)
+│   │   └── AvistamientosApiApplication.java       # Clase principal que arranca la API
+│   └── resources/application.properties           # Configuración de H2 y del servidor
+└── test/
+    ├── java/co/edu/unbosque/avistamientos_api/
+    │   ├── aplicacion/servicio/
+    │   │   ├── ValidadorDeAvistamientoTest.java   # Pruebas unitarias del validador
+    │   │   └── RelojFijo.java                     # Doble de prueba (stub) con fecha fija
+    │   ├── adaptador/entrada/web/
+    │   │   └── AvistamientoControllerTest.java    # Pruebas unitarias con mock del repositorio
+    │   └── AvistamientoApiTest.java               # Pruebas de integración
+    └── resources/application.properties           # H2 en memoria solo para las pruebas
+```
+
+Por eso, las pruebas unitarias de la sección **Pruebas automáticas** ahora están en `aplicacion/servicio/ValidadorDeAvistamientoTest` y `adaptador/entrada/web/AvistamientoControllerTest`. Los comandos para ejecutarlas y generar la cobertura no cambian.
+
+#### Commits del refactor
+
+El cambio se hizo en pasos pequeños, verificando las pruebas antes de cada commit:
+
+1. Reloj como puerto de salida y RelojDelSistema como su adaptador.
+2. Dominio sin JPA: puerto RepositorioAvistamientos y adaptador de persistencia.
+3. Casos de uso en ServicioAvistamientos: el controlador pasa a ser adaptador de entrada.
+4. ValidadorDeAvistamiento en la aplicación, sin anotaciones de Spring.
+
+#### Uso de IA en este taller
+
+En el **taller de Clean Architecture** también usé Claude (Claude Opus 5.5) para:
+
+- Entender las fuentes de la investigación (Cockburn, Martin y Palermo).
+- Revisar mi API y proponer cómo reorganizarla en arquitectura hexagonal, en pasos pequeños que mantuvieran las pruebas funcionando.
+- Preparar el diagrama de dependencias y la actualización de este README.
+
 ---
 
 ## Información Académica 

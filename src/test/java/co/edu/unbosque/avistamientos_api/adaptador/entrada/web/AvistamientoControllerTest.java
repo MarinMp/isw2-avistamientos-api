@@ -1,6 +1,7 @@
-package co.edu.unbosque.avistamientos_api.controller;
+package co.edu.unbosque.avistamientos_api.adaptador.entrada.web;
 
 import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.RepositorioAvistamientos;
+import co.edu.unbosque.avistamientos_api.aplicacion.servicio.ServicioAvistamientos;
 import co.edu.unbosque.avistamientos_api.dominio.Avistamiento;
 import co.edu.unbosque.avistamientos_api.validation.RelojFijo;
 import co.edu.unbosque.avistamientos_api.validation.ValidadorDeAvistamiento;
@@ -32,7 +33,8 @@ class AvistamientoControllerTest {
         repositorio = mock(RepositorioAvistamientos.class);
         // Validador real, con el stub del reloj (hoy = 2026-10-27)
         ValidadorDeAvistamiento validador = new ValidadorDeAvistamiento(new RelojFijo(LocalDate.of(2026, 10, 27)));
-        controlador = new AvistamientoController(repositorio, validador);
+        // Casos de uso reales, conectados al mock del repositorio
+        controlador = new AvistamientoController(new ServicioAvistamientos(repositorio, validador));
     }
 
     @Test

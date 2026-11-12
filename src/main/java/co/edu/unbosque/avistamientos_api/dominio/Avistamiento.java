@@ -51,4 +51,12 @@ public class Avistamiento {
     public void setObservador(String observador) {
         this.observador = observador;
     }
+
+    // Regla de negocio: quita espacios sobrantes y pasa la especie a minúsculas
+    public void normalizar() {
+        especie = especie.trim().toLowerCase();
+        lugar = lugar.trim();
+        fecha = fecha.trim();
+        observador = observador.trim();
+    }
 }

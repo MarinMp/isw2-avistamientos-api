@@ -1,5 +1,6 @@
 package co.edu.unbosque.avistamientos_api.validation;
 
+import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.Reloj;
 import co.edu.unbosque.avistamientos_api.model.Avistamiento;
 import org.springframework.stereotype.Component;
 

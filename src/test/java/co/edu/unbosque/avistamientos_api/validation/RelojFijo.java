@@ -1,5 +1,7 @@
 package co.edu.unbosque.avistamientos_api.validation;
 
+import co.edu.unbosque.avistamientos_api.aplicacion.puerto.salida.Reloj;
+
 import java.time.LocalDate;
 
 // Doble de prueba de tipo STUB: siempre responde la misma fecha.
